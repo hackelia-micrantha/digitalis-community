@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Project Digitalis Whitepaper | RFC Summary</title>
+    <meta
+      name="description"
+      content="A one-page summary of the Project Digitalis RFC suite covering trust bootstrap, backend authority, protected configuration, provider abstraction, native protection, and startup policy."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark"></span>
+          <span>Project Digitalis</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="./index.html">Home</a>
+          <a href="#summary">Summary</a>
+          <a href="#rfc-suite">RFC suite</a>
+          <a href="#outcomes">Outcomes</a>
+          <a href="#conclusion">Conclusion</a>
+        </nav>
+      </header>
+
+      <main class="whitepaper">
+        <section class="whitepaper-hero">
+          <p class="eyebrow">Whitepaper</p>
+          <h1>Backend-authoritative trust bootstrap for mobile applications.</h1>
+          <p class="whitepaper-lead">
+            This page condenses the Project Digitalis RFC suite into one readable
+            architecture summary. It explains what the system does, where trust
+            lives, and how the SDK behaves when startup conditions are good,
+            degraded, or unsafe.
+          </p>
+        </section>
+
+        <section class="whitepaper-section" id="summary">
+          <div class="whitepaper-intro reveal">
+            <h2>Executive summary</h2>
+            <p>
+              Project Digitalis is designed as a trust bootstrap runtime for
+              mobile applications. Its role is to keep protected capabilities
+              off until the app has collected attestation evidence, submitted it
+              to a backend, received a policy decision, fetched approved
+              protected configuration, installed that material into secure
+              storage, and reached a trusted active state.
+            </p>
+            <p>
+              The RFCs are aligned around one core principle: the backend is the
+              source of truth. The client gathers signals and enforces outcomes,
+              but it does not make final trust decisions on its own. That design
+              supports both Digitalis-operated and customer-managed backends
+              without changing the security model exposed to the SDK.
+            </p>
+          </div>
+
+          <div class="whitepaper-highlights reveal">
+            <article>
+              <h3>One startup model</h3>
+              <p>Cold start runs through attestation, verification, config retrieval, secure installation, and activation.</p>
+            </article>
+            <article>
+              <h3>One control plane</h3>
+              <p>Policy, TTL, degradation rules, and config authorization live with the backend rather than the device.</p>
+            </article>
+            <article>
+              <h3>One outcome model</h3>
+              <p>Success and failure map into a small set of deterministic startup outcomes that can be tested and audited.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="whitepaper-section" id="system-model">
+          <div class="whitepaper-copy reveal">
+            <h2>Canonical system model</h2>
+            <p>
+              The normalization plan describes the suite as a layered control
+              system. The host app invokes the SDK. The SDK orchestrates
+              provider-specific attestation, talks to a backend control plane,
+              receives policy and protected configuration, installs approved
+              material locally, and then enforces startup outcomes.
+            </p>
+            <p>
+              This matters because local secure storage is not treated as the
+              root of trust. It becomes useful only after backend verification
+              and authorization have completed successfully.
+            </p>
+          </div>
+        </section>
+
+        <section class="whitepaper-section" id="rfc-suite">
+          <div class="whitepaper-copy reveal">
+            <h2>RFC suite summary</h2>
+            <p>
+              The six current RFCs define the v1 trust bootstrap architecture
+              from startup sequencing through policy enforcement.
+            </p>
+          </div>
+
+          <div class="paper-grid">
+            <article class="paper-card reveal">
+              <span>RFC-0001</span>
+              <h3>Trust bootstrap architecture</h3>
+              <p>
+                Establishes the normative startup flow: attest, verify, fetch
+                configuration, install securely, then activate. Sensitive
+                features must fail closed when required steps fail.
+              </p>
+            </article>
+            <article class="paper-card reveal">
+              <span>RFC-0002</span>
+              <h3>Backend abstraction and conformance</h3>
+              <p>
+                Defines the backend as the control plane and requires custom
+                backends to preserve equivalent trust decisions, contract
+                versioning, and capability semantics.
+              </p>
+            </article>
+            <article class="paper-card reveal">
+              <span>RFC-0003</span>
+              <h3>Unified provider abstraction</h3>
+              <p>
+                Creates one orchestration interface for Apple and Google while
+                preserving raw evidence, provider capabilities, and deterministic
+                error classes for backend policy.
+              </p>
+            </article>
+            <article class="paper-card reveal">
+              <span>RFC-0004</span>
+              <h3>Protected configuration lifecycle</h3>
+              <p>
+                Treats configuration as a security-governed asset with
+                integrity validation, secure storage, versioning, rotation,
+                revocation, and anti-rollback controls.
+              </p>
+            </article>
+            <article class="paper-card reveal">
+              <span>RFC-0005</span>
+              <h3>Native protection boundaries</h3>
+              <p>
+                Allows obfuscated native code as defense in depth, but rejects
+                it as a trust anchor. Native helpers may raise reverse-engineering
+                cost without becoming the policy authority.
+              </p>
+            </article>
+            <article class="paper-card reveal">
+              <span>RFC-0006</span>
+              <h3>Startup policy and failure handling</h3>
+              <p>
+                Defines the canonical outcome model that keeps protected
+                features off by default and makes retries, blocking states, and
+                hard exits explicit and policy-driven.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="whitepaper-section">
+          <div class="whitepaper-copy reveal">
+            <h2>Key architectural themes</h2>
+          </div>
+          <div class="whitepaper-columns">
+            <article class="paper-card reveal">
+              <h3>Backend authority over client optimism</h3>
+              <p>
+                The client may sanity-check data and enforce outcomes, but the
+                backend remains authoritative for allow, deny, degrade, and TTL decisions.
+              </p>
+            </article>
+            <article class="paper-card reveal">
+              <h3>No silent downgrade</h3>
+              <p>
+                Capability negotiation and fallback behavior must remain
+                explicit. Unsupported environments should not quietly weaken the
+                trust posture.
+              </p>
+            </article>
+            <article class="paper-card reveal">
+              <h3>Configuration as a control asset</h3>
+              <p>
+                Protected config is tied to policy and integrity state. It is
+                not generic app settings delivered without trust context.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="whitepaper-section" id="outcomes">
+          <div class="whitepaper-copy reveal">
+            <h2>Canonical startup outcomes</h2>
+            <p>
+              RFC-0006 reduces all startup results into six outcome classes so
+              the SDK can be implemented consistently across platforms.
+            </p>
+          </div>
+
+          <div class="outcome-grid">
+            <article class="outcome-card reveal">
+              <h3>ALLOW</h3>
+              <p>Trust bootstrap succeeded, protected config is valid, and protected features may be enabled.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>ALLOW_DEGRADED</h3>
+              <p>Only explicitly approved non-sensitive behavior may continue while protected features remain disabled.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>RETRYABLE_FAILURE</h3>
+              <p>Temporary conditions such as timeout or backend interruption justify controlled retry logic.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>DENY_POLICY</h3>
+              <p>The backend rejected the presented environment or rule profile and the app remains contained.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>DENY_INTEGRITY</h3>
+              <p>Integrity, signature, rollback, or revocation failures make trusted operation unsafe.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>UNSUPPORTED_ENVIRONMENT</h3>
+              <p>The required provider, contract, or secure storage capability is not available for policy-compliant startup.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="whitepaper-section">
+          <div class="whitepaper-copy reveal">
+            <h2>Practical implication</h2>
+            <p>
+              Taken together, the RFCs are not just describing an SDK wrapper
+              around Apple App Attest and Google Play Integrity. They describe a
+              mobile trust system with explicit trust boundaries, a backend
+              control plane, governed config delivery, and deterministic
+              behavior under failure.
+            </p>
+            <p>
+              That makes the proposal more operationally demanding, but it also
+              makes it more suitable for real protected features, customer-managed
+              deployments, and formal conformance testing.
+            </p>
+          </div>
+        </section>
+
+        <section class="whitepaper-section" id="conclusion">
+          <div class="deploy-panel reveal">
+            <p class="eyebrow">Conclusion</p>
+            <h2>A security posture expressed as startup architecture.</h2>
+            <p>
+              The Project Digitalis RFC suite defines a mobile SDK shaped like a
+              control system rather than a helper library. Trust decisions stay
+              backend-authoritative, protected features stay off by default, and
+              protected configuration only activates after a full verified flow.
+            </p>
+            <p>
+              That is the central idea running through the full RFC set, and it
+              is the basis for the landing page, product positioning, and future
+              implementation work.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer" id="footer">
+        <div class="footer-inner">
+          <div class="footer-copy">
+            <p class="eyebrow">Project Digitalis</p>
+            <p>
+              Part of the Micrantha ecosystem. Read the architecture, then return
+              to the parent site for broader context.
+            </p>
+          </div>
+          <div class="footer-links">
+            <a href="./index.html">Home</a>
+            <a href="https://micrantha.com">micrantha.com</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="./main.js"></script>
+  </body>
+</html>

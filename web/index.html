@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Project Digitalis | A Low-Friction Trust Layer for Mobile Apps</title>
+    <meta
+      name="description"
+      content="Project Digitalis is a low-friction trust layer for mobile apps: backend-authoritative verification, protected configuration delivery, and deterministic startup policy for iOS and Android."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#top">
+          <span class="brand-mark"></span>
+          <span>Project Digitalis</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="#flow">Flow</a>
+          <a href="#controls">Controls</a>
+          <a href="#outcomes">Outcomes</a>
+          <a href="./whitepaper.html">Whitepaper</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <div class="hero-copy reveal">
+            <p class="eyebrow">Mobile trust layer</p>
+            <h1>A low-friction trust layer for mobile apps.</h1>
+            <p class="hero-text">
+              Project Digitalis verifies runtime signals, keeps trust decisions
+              on the backend, and unlocks protected configuration only after
+              startup conditions are acceptable.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#flow">See the trust flow</a>
+              <a class="button button-secondary" href="./whitepaper.html">Read the RFC whitepaper</a>
+            </div>
+          </div>
+
+          <div class="hero-visual reveal">
+            <div class="signal-card signal-card-primary">
+              <p class="signal-label">Verification lock</p>
+              <p class="signal-value">ALLOW</p>
+              <p class="signal-meta">Protected features stay off until verification, delivery, and secure install complete.</p>
+            </div>
+
+            <div class="signal-rail">
+              <div class="signal-step">
+                <span>01</span>
+                <strong>Collect evidence</strong>
+                <small>Apple App Attest or Google Play Integrity</small>
+              </div>
+              <div class="signal-step">
+                <span>02</span>
+                <strong>Verify server-side</strong>
+                <small>Backend-authoritative policy and TTL</small>
+              </div>
+              <div class="signal-step">
+                <span>03</span>
+                <strong>Unlock protected config</strong>
+                <small>Signed, encrypted, versioned, auditable</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="metrics reveal">
+          <div>
+            <span class="metric-kicker">Cross-platform</span>
+            <strong>One control flow</strong>
+            <p>Unified provider abstraction for Apple and Google without flattening assurance differences.</p>
+          </div>
+          <div>
+            <span class="metric-kicker">Backend-authoritative</span>
+            <strong>One decision layer</strong>
+            <p>The client gathers evidence. The backend decides allow, deny, degrade, or retry.</p>
+          </div>
+          <div>
+            <span class="metric-kicker">Low friction</span>
+            <strong>One additive layer</strong>
+            <p>Designed to sit in front of protected features without forcing a full platform rewrite.</p>
+          </div>
+        </section>
+
+        <section class="section split-section" id="flow">
+          <div class="section-copy reveal">
+            <p class="eyebrow">Architecture</p>
+            <h2>A startup sequence designed to fail closed.</h2>
+            <p>
+              The RFCs describe Project Digitalis as a trust bootstrap runtime.
+              The app is treated as exposed until attestation, verification,
+              policy, config retrieval, and secure installation all complete.
+            </p>
+          </div>
+          <div class="flow-grid reveal">
+            <article>
+              <span>1</span>
+              <h3>Attest</h3>
+              <p>Collect platform evidence and preserve raw provider artifacts for backend verification.</p>
+            </article>
+            <article>
+              <span>2</span>
+              <h3>Verify</h3>
+              <p>Normalize, bind nonces, enforce freshness, and map results to deterministic policy.</p>
+            </article>
+            <article>
+              <span>3</span>
+              <h3>Deliver</h3>
+              <p>Return signed and optionally encrypted config only after the backend authorizes it.</p>
+            </article>
+            <article>
+              <span>4</span>
+              <h3>Install</h3>
+              <p>Store protected material in hardware-backed facilities and prevent silent rollback.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section lightweight-section">
+          <div class="section-copy reveal">
+            <p class="eyebrow">Designed to layer in</p>
+            <h2>An extra security layer that does not ask you to rebuild everything.</h2>
+            <p>
+              Project Digitalis is easiest to understand as an additive control
+              surface. It can sit in front of existing backend logic, preserve a
+              customer-managed backend model, and make startup trust decisions
+              explicit without pretending the client is authoritative.
+            </p>
+          </div>
+          <div class="control-columns">
+            <article class="reveal">
+              <h3>Open backend model</h3>
+              <p>
+                Digitalis-operated and customer-managed backends can share one
+                contract and one semantic outcome model.
+              </p>
+            </article>
+            <article class="reveal">
+              <h3>Useful before deeper hardening</h3>
+              <p>
+                Attestation, signed config delivery, and startup containment add
+                value even before heavier runtime protection is introduced.
+              </p>
+            </article>
+            <article class="reveal">
+              <h3>Explicit over magical</h3>
+              <p>
+                Capabilities, degradation, retries, and denials are visible and
+                policy-controlled rather than hidden behind SDK optimism.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section band" id="controls">
+          <div class="section-copy reveal">
+            <p class="eyebrow">Security controls</p>
+            <h2 class="section-title-wide">A layered defense stack for harder, shorter-lived bypasses.</h2>
+            <p>
+              Project Digitalis combines client hardening, protocol safeguards,
+              short-lived trust, and verified secure storage so protected
+              behavior is never hanging on a single check.
+            </p>
+          </div>
+          <div class="control-grid">
+            <article class="reveal">
+              <h3>Binary obfuscation and anti-tampering</h3>
+              <p>
+                Raises the cost of patching, replaying, and bypassing modified
+                app logic.
+              </p>
+            </article>
+            <article class="reveal">
+              <h3>Nonce-bound attestation</h3>
+              <p>
+                Binds verification to fresh challenges so captured evidence is
+                harder to replay or reuse out of context.
+              </p>
+            </article>
+            <article class="reveal">
+              <h3>Periodic refresh and short-lived trust</h3>
+              <p>
+                Re-checks runtime posture and limits how long a previously valid
+                result can keep protected behavior unlocked.
+              </p>
+            </article>
+            <article class="reveal">
+              <h3>Verified config delivery</h3>
+              <p>
+                Uses signed, versioned, and policy-bound configuration so the
+                payload itself remains part of the trust model.
+              </p>
+            </article>
+            <article class="reveal">
+              <h3>Anti-rollback and version enforcement</h3>
+              <p>
+                Rejects stale packages and incompatible capability profiles so
+                weaker states are not silently reintroduced.
+              </p>
+            </article>
+            <article class="reveal">
+              <h3>Hardware-backed secure storage</h3>
+              <p>
+                Anchors approved sensitive material in hardware-backed storage
+                after verification succeeds, where the platform supports it.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section outcomes-section" id="outcomes">
+          <div class="section-copy reveal">
+            <p class="eyebrow">Outcome model</p>
+            <h2>Deterministic startup behavior under success, denial, and failure.</h2>
+            <p>
+              Equivalent upstream conditions should produce equivalent outcomes.
+              Protected features stay off unless startup reaches an allowed trusted state.
+            </p>
+          </div>
+          <div class="outcome-grid">
+            <article class="outcome-card reveal">
+              <h3>ALLOW</h3>
+              <p>Trust bootstrap succeeded. Valid config is active. Protected features are enabled.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>ALLOW_DEGRADED</h3>
+              <p>Only policy-approved non-sensitive behavior may continue. Protected features remain off.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>RETRYABLE_FAILURE</h3>
+              <p>Temporary failure. Retry is allowed. The app enters a containment path instead of guessing.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>DENY_POLICY</h3>
+              <p>Backend policy rejected the environment. Blocking UI and timed exit become deliberate controls.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>DENY_INTEGRITY</h3>
+              <p>Config, evidence, or runtime integrity is unsafe. Protected capabilities stay disabled.</p>
+            </article>
+            <article class="outcome-card reveal">
+              <h3>UNSUPPORTED_ENVIRONMENT</h3>
+              <p>Capabilities or secure storage requirements cannot be met. No hidden fallback path.</p>
+            </article>
+          </div>
+        </section>
+
+      </main>
+
+      <footer class="site-footer" id="footer">
+        <div class="footer-inner">
+          <div class="footer-copy">
+            <p class="eyebrow">Project Digitalis</p>
+            <p>
+              A low-friction trust layer for mobile applications, built within the
+              Micrantha ecosystem.
+            </p>
+          </div>
+          <div class="footer-links">
+            <a href="./whitepaper.html">RFC Whitepaper</a>
+            <a href="https://micrantha.com">micrantha.com</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="./main.js"></script>
+  </body>
+</html>
