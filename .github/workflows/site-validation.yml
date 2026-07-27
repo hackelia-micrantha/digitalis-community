@@ -1,0 +1,52 @@
+name: Site validation
+
+on:
+  pull_request:
+    paths:
+      - "web/**"
+      - "scripts/validate_site.py"
+      - "wrangler.jsonc"
+      - "README.md"
+      - "DEPLOYMENT.md"
+      - "LICENSE"
+      - "CONTRIBUTING.md"
+      - "CODE_OF_CONDUCT.md"
+      - "SECURITY.md"
+      - ".github/workflows/site-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "web/**"
+      - "scripts/validate_site.py"
+      - "wrangler.jsonc"
+      - "README.md"
+      - "DEPLOYMENT.md"
+      - "LICENSE"
+      - "CONTRIBUTING.md"
+      - "CODE_OF_CONDUCT.md"
+      - "SECURITY.md"
+      - ".github/workflows/site-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate public site
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate publication boundary
+        run: python3 scripts/validate_site.py
+
+      - name: Compile validation script
+        run: python3 -m py_compile scripts/validate_site.py
