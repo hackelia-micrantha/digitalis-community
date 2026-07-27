@@ -16,7 +16,8 @@
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
+  <body id="top">
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="page-shell">
       <header class="site-header">
         <a class="brand" href="#top" aria-label="Digitalis home">
@@ -31,7 +32,7 @@
         </nav>
       </header>
 
-      <main id="top">
+      <main id="main-content">
         <section class="hero reveal">
           <div class="hero-mark" aria-hidden="true">
             <div class="leaf leaf-a"></div>
@@ -82,39 +83,45 @@
               work, planned integrations, and production claims. The private
               engineering repository remains authoritative for implementation state.
             </p>
+            <p class="status-meta">
+              <strong>Status reviewed:</strong> July 27, 2026 ·
+              <strong>Public tracking:</strong>
+              <a href="https://github.com/hackelia-micrantha/digitalis-community/issues/2">digitalis-community issue #2</a> ·
+              This page is descriptive and does not constitute a compatibility or production-readiness guarantee.
+            </p>
           </div>
 
           <div class="status-table reveal">
             <article>
-              <span class="status status-defined">Defined</span>
+              <span class="status status-defined">Status: Defined</span>
               <div>
                 <h3>Trust bootstrap and outcome model</h3>
                 <p>Attest, verify, authorize, deliver, install, and refresh through explicit allow, degrade, retry, and deny outcomes.</p>
               </div>
             </article>
             <article>
-              <span class="status status-active">Active</span>
+              <span class="status status-active">Status: Active</span>
               <div>
                 <h3>Backend and integration prototype</h3>
                 <p>Implementation is being consolidated around a Cloudflare Worker service boundary and provider-specific verification adapters.</p>
               </div>
             </article>
             <article>
-              <span class="status status-evaluating">Evaluating</span>
+              <span class="status status-evaluating">Status: Evaluating</span>
               <div>
                 <h3>Google Play Integrity integration</h3>
                 <p>Existing Cloudflare Play Integrity work is being assessed for reuse, alignment, and migration into Digitalis.</p>
               </div>
             </article>
             <article>
-              <span class="status status-planned">Planned</span>
+              <span class="status status-planned">Status: Planned</span>
               <div>
                 <h3>Apple App Attest parity</h3>
                 <p>The provider abstraction accounts for Apple and Google assurance differences; complete public parity is not yet claimed.</p>
               </div>
             </article>
             <article>
-              <span class="status status-planned">Planned</span>
+              <span class="status status-planned">Status: Planned</span>
               <div>
                 <h3>Public SDKs and reproducible releases</h3>
                 <p>Versioned client packages, provenance metadata, compatibility guarantees, and public release evidence remain roadmap work.</p>
@@ -136,12 +143,36 @@
           </div>
 
           <div class="flow-grid reveal">
-            <article><span>01</span><h3>Collect</h3><p>Gather platform evidence and bind it to a fresh server challenge.</p></article>
-            <article><span>02</span><h3>Verify</h3><p>Validate provider artifacts server-side without flattening assurance semantics.</p></article>
-            <article><span>03</span><h3>Decide</h3><p>Apply deterministic policy to produce an explicit operational outcome.</p></article>
-            <article><span>04</span><h3>Release</h3><p>Return signed, versioned, and optionally encrypted configuration after authorization.</p></article>
-            <article><span>05</span><h3>Install</h3><p>Persist approved material using the strongest available platform storage boundary.</p></article>
-            <article><span>06</span><h3>Refresh</h3><p>Expire trust and re-evaluate posture rather than treating one success as permanent.</p></article>
+            <article>
+              <span>01</span>
+              <h3>Collect</h3>
+              <p>Gather platform evidence and bind it to a fresh server challenge.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Verify</h3>
+              <p>Validate provider artifacts server-side without flattening assurance semantics.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Decide</h3>
+              <p>Apply deterministic policy to produce an explicit operational outcome.</p>
+            </article>
+            <article>
+              <span>04</span>
+              <h3>Release</h3>
+              <p>Return signed, versioned, and optionally encrypted configuration after authorization.</p>
+            </article>
+            <article>
+              <span>05</span>
+              <h3>Install</h3>
+              <p>Persist approved material using the strongest available platform storage boundary.</p>
+            </article>
+            <article>
+              <span>06</span>
+              <h3>Refresh</h3>
+              <p>Expire trust and re-evaluate posture rather than treating one success as permanent.</p>
+            </article>
           </div>
         </section>
 
@@ -151,12 +182,30 @@
             <h2>Explicit controls for systems that must fail predictably.</h2>
           </div>
           <div class="card-grid reveal">
-            <article><h3>Fail closed</h3><p>Protected capabilities stay unavailable when evidence, policy, configuration, or storage cannot be verified.</p></article>
-            <article><h3>Preserve provider meaning</h3><p>A common contract does not erase meaningful differences between App Attest and Play Integrity assurances.</p></article>
-            <article><h3>Short-lived trust</h3><p>Freshness, nonces, expiry, and refresh reduce the useful lifetime of captured or previously valid state.</p></article>
-            <article><h3>Layered hardening</h3><p>Attestation complements signing, secure storage, anti-rollback, obfuscation, telemetry, and backend authorization.</p></article>
-            <article><h3>Customer-controlled deployment</h3><p>The architecture should support both a managed service and independently operated backend deployments.</p></article>
-            <article><h3>Evidence over claims</h3><p>Production readiness requires reproducible releases, test evidence, provenance, operational guidance, and demonstrated integrations.</p></article>
+            <article>
+              <h3>Fail closed</h3>
+              <p>Protected capabilities stay unavailable when evidence, policy, configuration, or storage cannot be verified.</p>
+            </article>
+            <article>
+              <h3>Preserve provider meaning</h3>
+              <p>A common contract does not erase meaningful differences between App Attest and Play Integrity assurances.</p>
+            </article>
+            <article>
+              <h3>Short-lived trust</h3>
+              <p>Freshness, nonces, expiry, and refresh reduce the useful lifetime of captured or previously valid state.</p>
+            </article>
+            <article>
+              <h3>Layered hardening</h3>
+              <p>Attestation complements signing, secure storage, anti-rollback, obfuscation, telemetry, and backend authorization.</p>
+            </article>
+            <article>
+              <h3>Customer-controlled deployment</h3>
+              <p>The architecture should support both a managed service and independently operated backend deployments.</p>
+            </article>
+            <article>
+              <h3>Evidence over claims</h3>
+              <p>Production readiness requires reproducible releases, test evidence, provenance, operational guidance, and demonstrated integrations.</p>
+            </article>
           </div>
         </section>
 
@@ -166,10 +215,34 @@
             <h2>Consolidate the implementation before expanding the promise.</h2>
           </div>
           <ol class="roadmap reveal">
-            <li><span>1</span><div><h3>Resolve the public/private publication boundary</h3><p>Keep implementation authority private while publishing reviewed documentation, releases, and provenance through this repository.</p></div></li>
-            <li><span>2</span><div><h3>Consolidate the Cloudflare Worker backend</h3><p>Absorb or replace earlier Themis-era and Play Integrity-specific work behind the Digitalis service contract.</p></div></li>
-            <li><span>3</span><div><h3>Demonstrate provider integrations</h3><p>Validate end-to-end Google Play Integrity and Apple App Attest flows with deterministic failure and degradation behavior.</p></div></li>
-            <li><span>4</span><div><h3>Publish SDK and release evidence</h3><p>Add versioned packages, compatibility matrices, signed artifacts, SBOMs, provenance, and deployment documentation.</p></div></li>
+            <li>
+              <span>1</span>
+              <div>
+                <h3>Resolve the public/private publication boundary</h3>
+                <p>Keep implementation authority private while publishing reviewed documentation, releases, and provenance through this repository.</p>
+              </div>
+            </li>
+            <li>
+              <span>2</span>
+              <div>
+                <h3>Consolidate the Cloudflare Worker backend</h3>
+                <p>Absorb or replace earlier Themis-era and Play Integrity-specific work behind the Digitalis service contract.</p>
+              </div>
+            </li>
+            <li>
+              <span>3</span>
+              <div>
+                <h3>Demonstrate provider integrations</h3>
+                <p>Validate end-to-end Google Play Integrity and Apple App Attest flows with deterministic failure and degradation behavior.</p>
+              </div>
+            </li>
+            <li>
+              <span>4</span>
+              <div>
+                <h3>Publish SDK and release evidence</h3>
+                <p>Add versioned packages, compatibility matrices, signed artifacts, SBOMs, provenance, and deployment documentation.</p>
+              </div>
+            </li>
           </ol>
         </section>
 
