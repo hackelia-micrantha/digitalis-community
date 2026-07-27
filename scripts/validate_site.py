@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -69,10 +70,24 @@ def validate_configuration(errors: list[str]) -> None:
     if not config.get("compatibility_date"):
         fail(errors, "wrangler.jsonc must define compatibility_date")
 
+    deployment = ROOT / "DEPLOYMENT.md"
+    if deployment.is_file():
+        text = deployment.read_text(encoding="utf-8")
+        required_phrases = [
+            "build output directory: `web`",
+            "wrangler pages deploy web",
+            "/.well-known/security.txt",
+            "JavaScript disabled",
+        ]
+        for phrase in required_phrases:
+            if phrase not in text:
+                fail(errors, f"DEPLOYMENT.md missing operational requirement: {phrase}")
+
 
 def validate_required_files(errors: list[str]) -> None:
     required = [
         ROOT / "README.md",
+        ROOT / "DEPLOYMENT.md",
         ROOT / "LICENSE",
         ROOT / "CONTRIBUTING.md",
         ROOT / "CODE_OF_CONDUCT.md",
@@ -108,6 +123,18 @@ def validate_headers(errors: list[str]) -> None:
             fail(errors, f"web/_headers missing {header}")
     if "script-src 'self'" not in text or "style-src 'self'" not in text:
         fail(errors, "CSP must keep scripts and styles same-origin")
+    if "frame-ancestors 'none'" not in text or "object-src 'none'" not in text:
+        fail(errors, "CSP must deny framing and plugin content")
+    if "/*.html" not in text or "/.well-known/security.txt" not in text:
+        fail(errors, "web/_headers must define HTML and security metadata cache rules")
+
+
+def parse_security_expiry(value: str) -> datetime:
+    normalized = value.strip().replace("Z", "+00:00")
+    parsed = datetime.fromisoformat(normalized)
+    if parsed.tzinfo is None:
+        raise ValueError("expiry must include a timezone")
+    return parsed.astimezone(timezone.utc)
 
 
 def validate_security_txt(errors: list[str]) -> None:
@@ -121,12 +148,51 @@ def validate_security_txt(errors: list[str]) -> None:
         "Expires:": None,
         "Preferred-Languages:": "en",
     }
+    values: dict[str, str] = {}
     for key, expected in required.items():
         matching = [line for line in text.splitlines() if line.startswith(key)]
         if not matching:
             fail(errors, f"security.txt missing {key}")
-        elif expected and expected not in matching[0]:
+            continue
+        values[key] = matching[0].split(":", 1)[1].strip()
+        if expected and expected not in matching[0]:
             fail(errors, f"security.txt has unexpected {key} value")
+
+    expiry_value = values.get("Expires:")
+    if not expiry_value:
+        return
+    try:
+        expiry = parse_security_expiry(expiry_value)
+    except ValueError as exc:
+        fail(errors, f"security.txt has invalid Expires value: {exc}")
+        return
+
+    now = datetime.now(timezone.utc)
+    if expiry <= now:
+        fail(errors, "security.txt Expires value is in the past")
+    elif expiry < now + timedelta(days=30):
+        fail(errors, "security.txt expires in less than 30 days")
+    elif expiry > now + timedelta(days=366):
+        fail(errors, "security.txt Expires value must be no more than one year ahead")
+
+
+def validate_progressive_enhancement(errors: list[str]) -> None:
+    styles_path = SITE / "styles.css"
+    script_path = SITE / "main.js"
+    if not styles_path.is_file() or not script_path.is_file():
+        return
+
+    styles = styles_path.read_text(encoding="utf-8")
+    script = script_path.read_text(encoding="utf-8")
+    reveal_rule = re.search(r"\.reveal\s*\{(?P<body>[^}]*)\}", styles, re.DOTALL)
+    if reveal_rule is None or not re.search(r"opacity\s*:\s*1", reveal_rule.group("body")):
+        fail(errors, "base .reveal styling must keep content visible without JavaScript")
+    if ".js .reveal" not in styles or ".js .reveal.is-visible" not in styles:
+        fail(errors, "reveal animation must be scoped behind the JavaScript marker")
+    if 'classList.add("js")' not in script:
+        fail(errors, "main.js must explicitly enable the JavaScript animation state")
+    if '"IntersectionObserver" in window' not in script or "is-visible" not in script:
+        fail(errors, "main.js must provide IntersectionObserver and readable fallback behavior")
 
 
 def local_target(document: Path, reference: str) -> tuple[Path, str] | None:
@@ -145,16 +211,20 @@ def local_target(document: Path, reference: str) -> tuple[Path, str] | None:
 
 def validate_documents(errors: list[str]) -> None:
     documents: dict[Path, DocumentParser] = {}
+    document_text: dict[Path, str] = {}
     for document in sorted(SITE.rglob("*.html")):
+        text = document.read_text(encoding="utf-8")
         parser = DocumentParser()
-        parser.feed(document.read_text(encoding="utf-8"))
-        documents[document.resolve()] = parser
+        parser.feed(text)
+        resolved = document.resolve()
+        documents[resolved] = parser
+        document_text[resolved] = text
         if not parser.visible_text:
             fail(errors, f"{document.relative_to(ROOT)} has no static visible text")
-        if "skip-link" not in document.read_text(encoding="utf-8"):
+        if "skip-link" not in text:
             fail(errors, f"{document.relative_to(ROOT)} lacks skip navigation")
 
-    for document, parser in documents.items():
+    for document, parser in list(documents.items()):
         for attribute, reference in parser.references:
             target_info = local_target(document, reference)
             if target_info is None:
@@ -175,7 +245,6 @@ def validate_documents(errors: list[str]) -> None:
                 if target_parser is None:
                     target_parser = DocumentParser()
                     target_parser.feed(target.read_text(encoding="utf-8"))
-                    documents[target.resolve()] = target_parser
                 if fragment not in target_parser.ids:
                     fail(errors, f"{document.relative_to(ROOT)} has missing anchor: {reference}")
 
@@ -186,6 +255,7 @@ def main() -> int:
     validate_required_files(errors)
     validate_headers(errors)
     validate_security_txt(errors)
+    validate_progressive_enhancement(errors)
     validate_documents(errors)
 
     if errors:
