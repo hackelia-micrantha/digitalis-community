@@ -23,7 +23,9 @@ See [`web/index.html`](web/index.html) for the current public status and [`web/w
 
 The deployable site root is `web/`. Cloudflare Pages or equivalent static hosting must publish that directory rather than the repository root.
 
-Security headers and cache policy are defined in [`web/_headers`](web/_headers). The canonical security contact is published at [`web/.well-known/security.txt`](web/.well-known/security.txt).
+[`wrangler.jsonc`](wrangler.jsonc) defines the output directory for Wrangler/direct-upload Pages deployments. A Cloudflare Pages project connected through Git integration must separately set its dashboard build output directory to `web`; repository configuration does not automatically rewrite that external setting.
+
+See [`DEPLOYMENT.md`](DEPLOYMENT.md) for supported deployment paths and post-deployment verification. Security headers and cache policy are defined in [`web/_headers`](web/_headers). The canonical security contact is published at [`web/.well-known/security.txt`](web/.well-known/security.txt).
 
 ## Publication provenance
 
