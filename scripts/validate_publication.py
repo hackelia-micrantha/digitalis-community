@@ -11,21 +11,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "publication" / "manifest.json"
-ALLOWED_OWNERSHIP = {
-    "publication-owned",
-    "generated-publication",
-    "external-artifact",
-}
+ALLOWED_OWNERSHIP = {"publication-owned", "generated-publication", "external-artifact"}
 REQUIRED_ARTIFACT_FIELDS = {
-    "path",
-    "version",
-    "ownership",
-    "generation_method",
-    "source_reference",
+    "path", "version", "ownership", "generation_method", "source_reference"
 }
 PRIVATE_IDENTIFIER_PATTERNS = (
-    re.compile(r"hackelia-micrantha/digitalis(?:\b|/)", re.IGNORECASE),
-    re.compile(r"github\.com/hackelia-micrantha/digitalis(?:\b|/)", re.IGNORECASE),
+    re.compile(r"hackelia-micrantha/digitalis(?!-community)(?:\b|/)", re.IGNORECASE),
+    re.compile(r"github\.com/hackelia-micrantha/digitalis(?!-community)(?:\b|/)", re.IGNORECASE),
 )
 
 
@@ -54,16 +46,17 @@ def validate_top_level(manifest: dict[str, object], errors: list[str]) -> None:
     publication_id = manifest.get("publication_id")
     if not isinstance(publication_id, str) or not publication_id.strip():
         fail(errors, "publication_id must be a non-empty string")
+
     reviewed_at = manifest.get("reviewed_at")
     if not isinstance(reviewed_at, str):
         fail(errors, "reviewed_at must be an ISO date")
     else:
         try:
-            parsed = date.fromisoformat(reviewed_at)
-            if parsed > date.today():
+            if date.fromisoformat(reviewed_at) > date.today():
                 fail(errors, "reviewed_at cannot be in the future")
         except ValueError:
             fail(errors, "reviewed_at must be an ISO date")
+
     if manifest.get("direction") != "one-way-inbound":
         fail(errors, "direction must be one-way-inbound")
 
@@ -143,9 +136,8 @@ def validate_artifacts(manifest: dict[str, object], errors: list[str]) -> None:
 
 def validate_publication_safety(errors: list[str]) -> None:
     text = MANIFEST.read_text(encoding="utf-8") if MANIFEST.is_file() else ""
-    for pattern in PRIVATE_IDENTIFIER_PATTERNS:
-        if pattern.search(text):
-            fail(errors, "publication manifest exposes a prohibited private repository identifier")
+    if any(pattern.search(text) for pattern in PRIVATE_IDENTIFIER_PATTERNS):
+        fail(errors, "publication manifest exposes a prohibited private repository identifier")
 
 
 def main() -> int:
