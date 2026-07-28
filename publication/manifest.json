@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "publication_id": "digitalis-community-2026-07-27",
+  "reviewed_at": "2026-07-27",
+  "direction": "one-way-inbound",
+  "destination": {
+    "repository": "hackelia-micrantha/digitalis-community",
+    "role": "authoritative-publication-boundary"
+  },
+  "source": {
+    "visibility": "private",
+    "repository_identifier": "withheld",
+    "reference": "publication-approved:initial-boundary",
+    "reference_type": "opaque-publication-id"
+  },
+  "policy": {
+    "public_files_authoritative_after_import": true,
+    "reverse_sync_allowed": false,
+    "implicit_mirroring_allowed": false,
+    "private_identifiers_allowed": false
+  },
+  "artifacts": [
+    {
+      "path": "web/index.html",
+      "version": "2026-07-27",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "public-pr-3"
+    },
+    {
+      "path": "web/whitepaper.html",
+      "version": "2026-07-27",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "public-pr-3"
+    },
+    {
+      "path": "web/styles.css",
+      "version": "2026-07-27",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "public-pr-3"
+    },
+    {
+      "path": "web/main.js",
+      "version": "2026-07-27",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "public-pr-3"
+    },
+    {
+      "path": "web/_headers",
+      "version": "2026-07-27",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "public-pr-4"
+    },
+    {
+      "path": "web/.well-known/security.txt",
+      "version": "2026-07-27",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "public-boundary-bootstrap"
+    }
+  ]
+}
