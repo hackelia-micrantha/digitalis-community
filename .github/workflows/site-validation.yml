@@ -4,10 +4,13 @@ on:
   pull_request:
     paths:
       - "web/**"
+      - "publication/**"
       - "scripts/validate_site.py"
+      - "scripts/validate_publication.py"
       - "wrangler.jsonc"
       - "README.md"
       - "DEPLOYMENT.md"
+      - "PUBLICATION.md"
       - "LICENSE"
       - "CONTRIBUTING.md"
       - "CODE_OF_CONDUCT.md"
@@ -18,10 +21,13 @@ on:
       - main
     paths:
       - "web/**"
+      - "publication/**"
       - "scripts/validate_site.py"
+      - "scripts/validate_publication.py"
       - "wrangler.jsonc"
       - "README.md"
       - "DEPLOYMENT.md"
+      - "PUBLICATION.md"
       - "LICENSE"
       - "CONTRIBUTING.md"
       - "CODE_OF_CONDUCT.md"
@@ -45,8 +51,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Validate publication provenance
+        run: python3 scripts/validate_publication.py
+
       - name: Validate publication boundary
         run: python3 scripts/validate_site.py
 
-      - name: Compile validation script
-        run: python3 -m py_compile scripts/validate_site.py
+      - name: Compile validation scripts
+        run: python3 -m py_compile scripts/validate_publication.py scripts/validate_site.py
