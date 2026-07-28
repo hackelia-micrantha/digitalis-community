@@ -2,37 +2,9 @@ name: Site validation
 
 on:
   pull_request:
-    paths:
-      - "web/**"
-      - "publication/**"
-      - "scripts/validate_site.py"
-      - "scripts/validate_publication.py"
-      - "wrangler.jsonc"
-      - "README.md"
-      - "DEPLOYMENT.md"
-      - "PUBLICATION.md"
-      - "LICENSE"
-      - "CONTRIBUTING.md"
-      - "CODE_OF_CONDUCT.md"
-      - "SECURITY.md"
-      - ".github/workflows/site-validation.yml"
   push:
     branches:
       - main
-    paths:
-      - "web/**"
-      - "publication/**"
-      - "scripts/validate_site.py"
-      - "scripts/validate_publication.py"
-      - "wrangler.jsonc"
-      - "README.md"
-      - "DEPLOYMENT.md"
-      - "PUBLICATION.md"
-      - "LICENSE"
-      - "CONTRIBUTING.md"
-      - "CODE_OF_CONDUCT.md"
-      - "SECURITY.md"
-      - ".github/workflows/site-validation.yml"
   workflow_dispatch:
 
 permissions:
