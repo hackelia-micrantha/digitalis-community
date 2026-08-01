@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://digitalis.micrantha.com/sitemap.xml
