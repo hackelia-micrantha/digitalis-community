@@ -63,6 +63,13 @@
       "source_reference": "public-boundary-bootstrap"
     },
     {
+      "path": "web/wrangler.jsonc",
+      "version": "2026-08-01",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "production-deployment-config"
+    },
+    {
       "path": "web/404.html",
       "version": "2026-08-01",
       "ownership": "publication-owned",
