@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "publication_id": "digitalis-community-2026-07-27",
-  "reviewed_at": "2026-07-27",
+  "publication_id": "digitalis-community-2026-08-01",
+  "reviewed_at": "2026-08-01",
   "direction": "one-way-inbound",
   "destination": {
     "repository": "hackelia-micrantha/digitalis-community",
@@ -10,7 +10,7 @@
   "source": {
     "visibility": "private",
     "repository_identifier": "withheld",
-    "reference": "publication-approved:initial-boundary",
+    "reference": "publication-approved:production-polish",
     "reference_type": "opaque-publication-id"
   },
   "policy": {
@@ -61,6 +61,27 @@
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
       "source_reference": "public-boundary-bootstrap"
+    },
+    {
+      "path": "web/404.html",
+      "version": "2026-08-01",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "production-polish"
+    },
+    {
+      "path": "web/robots.txt",
+      "version": "2026-08-01",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "production-polish"
+    },
+    {
+      "path": "web/sitemap.xml",
+      "version": "2026-08-01",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "production-polish"
     }
   ]
 }
