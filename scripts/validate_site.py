@@ -65,17 +65,22 @@ def validate_configuration(errors: list[str]) -> None:
     except (OSError, json.JSONDecodeError) as exc:
         fail(errors, f"invalid wrangler.jsonc: {exc}")
         return
-    if config.get("pages_build_output_dir") != "./web":
-        fail(errors, "wrangler.jsonc must publish ./web")
+
+    assets = config.get("assets")
+    if not isinstance(assets, dict) or assets.get("directory") != "./web":
+        fail(errors, "wrangler.jsonc assets.directory must publish ./web")
     if not config.get("compatibility_date"):
         fail(errors, "wrangler.jsonc must define compatibility_date")
+    if (SITE / "wrangler.jsonc").exists():
+        fail(errors, "deployment configuration must not be inside web/")
 
     deployment = ROOT / "DEPLOYMENT.md"
     if deployment.is_file():
         text = deployment.read_text(encoding="utf-8")
         required_phrases = [
-            "build output directory: `web`",
-            "wrangler pages deploy web",
+            "Cloudflare Workers Git integration",
+            "asset directory to `./web`",
+            "digitalis.micrantha.com",
             "/.well-known/security.txt",
             "JavaScript disabled",
         ]
@@ -94,6 +99,9 @@ def validate_required_files(errors: list[str]) -> None:
         ROOT / "SECURITY.md",
         SITE / "index.html",
         SITE / "whitepaper.html",
+        SITE / "404.html",
+        SITE / "robots.txt",
+        SITE / "sitemap.xml",
         SITE / "styles.css",
         SITE / "main.js",
         SITE / "_headers",
@@ -211,14 +219,12 @@ def local_target(document: Path, reference: str) -> tuple[Path, str] | None:
 
 def validate_documents(errors: list[str]) -> None:
     documents: dict[Path, DocumentParser] = {}
-    document_text: dict[Path, str] = {}
     for document in sorted(SITE.rglob("*.html")):
         text = document.read_text(encoding="utf-8")
         parser = DocumentParser()
         parser.feed(text)
         resolved = document.resolve()
         documents[resolved] = parser
-        document_text[resolved] = text
         if not parser.visible_text:
             fail(errors, f"{document.relative_to(ROOT)} has no static visible text")
         if "skip-link" not in text:
