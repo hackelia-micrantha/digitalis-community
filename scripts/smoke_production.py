@@ -21,6 +21,13 @@ REQUIRED_HEADERS = {
     "x-content-type-options": ("nosniff",),
     "referrer-policy": ("strict-origin-when-cross-origin",),
 }
+NESTED_404_PATH = "/docs/definitely-not-a-real-route"
+NESTED_404_MARKERS = (
+    'href="/styles.css"',
+    'href="/"',
+    'href="/whitepaper.html"',
+    "404 · page not found",
+)
 
 
 def fetch(path: str) -> tuple[int, dict[str, str], str]:
@@ -28,7 +35,12 @@ def fetch(path: str) -> tuple[int, dict[str, str], str]:
         f"{BASE_URL}{path}",
         headers={"User-Agent": "digitalis-production-smoke/1"},
     )
-    with urlopen(request, timeout=20) as response:
+    try:
+        response = urlopen(request, timeout=20)
+    except HTTPError as exc:
+        response = exc
+
+    with response:
         body = response.read().decode("utf-8", errors="replace")
         headers = {key.lower(): value for key, value in response.headers.items()}
         return response.status, headers, body
@@ -39,9 +51,6 @@ def main() -> int:
     for path, expected_text in CHECKS.items():
         try:
             status, headers, body = fetch(path)
-        except HTTPError as exc:
-            errors.append(f"{path}: HTTP {exc.code}")
-            continue
         except URLError as exc:
             errors.append(f"{path}: connection failed: {exc.reason}")
             continue
@@ -60,6 +69,17 @@ def main() -> int:
                 for required in required_values:
                     if required.lower() not in actual.lower():
                         errors.append(f"/: {header} missing {required}")
+
+    try:
+        status, _, body = fetch(NESTED_404_PATH)
+    except URLError as exc:
+        errors.append(f"{NESTED_404_PATH}: connection failed: {exc.reason}")
+    else:
+        if status != 404:
+            errors.append(f"{NESTED_404_PATH}: expected HTTP 404, got {status}")
+        for marker in NESTED_404_MARKERS:
+            if marker not in body:
+                errors.append(f"{NESTED_404_PATH}: missing 404 marker {marker}")
 
     if errors:
         print("Digitalis production smoke test failed:", file=sys.stderr)
