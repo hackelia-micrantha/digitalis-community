@@ -22,6 +22,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require provenance update for public asset changes
+        run: python3 scripts/validate_publication_change.py
 
       - name: Validate publication provenance
         run: python3 scripts/validate_publication.py
@@ -30,4 +35,4 @@ jobs:
         run: python3 scripts/validate_site.py
 
       - name: Compile validation scripts
-        run: python3 -m py_compile scripts/validate_publication.py scripts/validate_site.py
+        run: python3 -m py_compile scripts/validate_publication.py scripts/validate_publication_change.py scripts/validate_site.py

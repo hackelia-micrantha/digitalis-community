@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "publication_id": "digitalis-community-2026-08-01",
-  "reviewed_at": "2026-08-01",
+  "publication_id": "digitalis-community-2026-08-11",
+  "reviewed_at": "2026-08-11",
   "direction": "one-way-inbound",
   "destination": {
     "repository": "hackelia-micrantha/digitalis-community",
@@ -10,7 +10,7 @@
   "source": {
     "visibility": "private",
     "repository_identifier": "withheld",
-    "reference": "publication-approved:production-polish",
+    "reference": "publication-approved:integrity-hardening",
     "reference_type": "opaque-publication-id"
   },
   "policy": {
@@ -25,63 +25,72 @@
       "version": "2026-07-27",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-pr-3"
+      "source_reference": "public-pr-3",
+      "sha256": "65445168465d62d3f1662c937b88bb61779837f828f0e2b44830aa14bddb423e"
     },
     {
       "path": "web/whitepaper.html",
       "version": "2026-07-27",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-pr-3"
+      "source_reference": "public-pr-3",
+      "sha256": "43f06a9cbd2a8741fe6490ff60eb69cf14bba104f0264677fabcc080ee2761b1"
     },
     {
       "path": "web/styles.css",
       "version": "2026-07-27",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-pr-3"
+      "source_reference": "public-pr-3",
+      "sha256": "69a2212c5438fd0e2d28b70ef7f57acaea2f0a39e7cd31bfe28fd1fcc67bf60f"
     },
     {
       "path": "web/main.js",
       "version": "2026-07-27",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-pr-3"
+      "source_reference": "public-pr-3",
+      "sha256": "1b7070fec6dd20f8b890d208ebc52ec98fac28d8b133f20e0b583322366c0f1d"
     },
     {
       "path": "web/_headers",
       "version": "2026-07-27",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-pr-4"
+      "source_reference": "public-pr-4",
+      "sha256": "aa2586656a10a8d00f922eb8d363300b019721ef1dcb76d43686e7be9e6c8130"
     },
     {
       "path": "web/.well-known/security.txt",
       "version": "2026-07-27",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-boundary-bootstrap"
+      "source_reference": "public-boundary-bootstrap",
+      "sha256": "ec054f94cb362b289f5cd3c285ec4b3482d1ae8e886319b36fb51d2cf7619acc"
     },
     {
       "path": "web/404.html",
       "version": "2026-08-01",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "production-polish"
+      "source_reference": "production-polish",
+      "sha256": "9a73481452682509dde5404ee3f77286cdd9773c710e8c2800b12559d140845f"
     },
     {
       "path": "web/robots.txt",
       "version": "2026-08-01",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "production-polish"
+      "source_reference": "production-polish",
+      "sha256": "e32fb3045b135a21c113e4ea0b5eb97cd44c9917802d1027aa9b6d773a90df60"
     },
     {
       "path": "web/sitemap.xml",
       "version": "2026-08-01",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "production-polish"
+      "source_reference": "production-polish",
+      "sha256": "588b0e1723af50e6200f48630edb80f8e124b88e9debc0de5b2b7c8c0b88c0cf"
     }
   ]
 }

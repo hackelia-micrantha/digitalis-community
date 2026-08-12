@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -23,6 +24,7 @@ REQUIRED_ARTIFACT_FIELDS = {
     "ownership",
     "generation_method",
     "source_reference",
+    "sha256",
 }
 PRIVATE_IDENTIFIER_PATTERNS = (
     re.compile(r"hackelia-micrantha/digitalis(?!-community)(?:\b|/)", re.IGNORECASE),
@@ -32,6 +34,7 @@ PRIVATE_IDENTIFIER_PATTERNS = (
     ),
 )
 PUBLICATION_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{2,127}$")
+SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 
 def fail(errors: list[str], message: str) -> None:
@@ -53,7 +56,18 @@ def load_manifest(errors: list[str]) -> dict[str, object] | None:
     return value
 
 
-def validate_top_level(manifest: dict[str, object], errors: list[str]) -> None:
+def parse_iso_date(value: object, field: str, errors: list[str]) -> date | None:
+    if not isinstance(value, str):
+        fail(errors, f"{field} must be an ISO date")
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        fail(errors, f"{field} must be an ISO date")
+        return None
+
+
+def validate_top_level(manifest: dict[str, object], errors: list[str]) -> date | None:
     if manifest.get("schema_version") != 1:
         fail(errors, "schema_version must be 1")
 
@@ -63,15 +77,14 @@ def validate_top_level(manifest: dict[str, object], errors: list[str]) -> None:
     ):
         fail(errors, "publication_id must be a stable lowercase identifier")
 
-    reviewed_at = manifest.get("reviewed_at")
-    if not isinstance(reviewed_at, str):
-        fail(errors, "reviewed_at must be an ISO date")
-    else:
-        try:
-            if date.fromisoformat(reviewed_at) > date.today():
-                fail(errors, "reviewed_at cannot be in the future")
-        except ValueError:
-            fail(errors, "reviewed_at must be an ISO date")
+    reviewed_at = parse_iso_date(manifest.get("reviewed_at"), "reviewed_at", errors)
+    if reviewed_at is not None:
+        if reviewed_at > date.today():
+            fail(errors, "reviewed_at cannot be in the future")
+        if isinstance(publication_id, str) and not publication_id.endswith(
+            reviewed_at.isoformat()
+        ):
+            fail(errors, "publication_id must end with reviewed_at")
 
     if manifest.get("direction") != "one-way-inbound":
         fail(errors, "direction must be one-way-inbound")
@@ -112,6 +125,8 @@ def validate_top_level(manifest: dict[str, object], errors: list[str]) -> None:
             if policy.get(key) is not value:
                 fail(errors, f"policy.{key} must be {str(value).lower()}")
 
+    return reviewed_at
+
 
 def normalize_artifact_path(path_value: str) -> str | None:
     pure = PurePosixPath(path_value)
@@ -121,7 +136,7 @@ def normalize_artifact_path(path_value: str) -> str | None:
 
 
 def validate_artifacts(
-    manifest: dict[str, object], errors: list[str]
+    manifest: dict[str, object], reviewed_at: date | None, errors: list[str]
 ) -> set[str]:
     artifacts = manifest.get("artifacts")
     if not isinstance(artifacts, list) or not artifacts:
@@ -138,9 +153,8 @@ def validate_artifacts(
         missing = REQUIRED_ARTIFACT_FIELDS - artifact.keys()
         if missing:
             fail(errors, f"{prefix} missing fields: {', '.join(sorted(missing))}")
-            continue
 
-        for field in REQUIRED_ARTIFACT_FIELDS:
+        for field in REQUIRED_ARTIFACT_FIELDS - {"sha256"}:
             if not isinstance(artifact.get(field), str) or not str(artifact[field]).strip():
                 fail(errors, f"{prefix}.{field} must be a non-empty string")
 
@@ -164,6 +178,23 @@ def validate_artifacts(
             continue
         if not target.is_file():
             fail(errors, f"artifact path does not exist: {normalized}")
+            continue
+
+        actual_sha256 = hashlib.sha256(target.read_bytes()).hexdigest()
+        declared_sha256 = artifact.get("sha256")
+        if not isinstance(declared_sha256, str) or not SHA256_PATTERN.fullmatch(
+            declared_sha256
+        ):
+            fail(errors, f"{prefix}.sha256 must be {actual_sha256}")
+        elif declared_sha256 != actual_sha256:
+            fail(
+                errors,
+                f"{prefix}.sha256 mismatch for {normalized}: expected {actual_sha256}",
+            )
+
+        artifact_date = parse_iso_date(artifact.get("version"), f"{prefix}.version", errors)
+        if artifact_date is not None and reviewed_at is not None and artifact_date > reviewed_at:
+            fail(errors, f"{prefix}.version cannot be newer than reviewed_at")
 
         ownership = artifact.get("ownership")
         if ownership not in ALLOWED_OWNERSHIP:
@@ -178,6 +209,10 @@ def validate_artifacts(
                 "for publication-owned artifacts",
             )
 
+        artifact_text = target.read_bytes().decode("utf-8", errors="ignore")
+        if any(pattern.search(artifact_text) for pattern in PRIVATE_IDENTIFIER_PATTERNS):
+            fail(errors, f"governed artifact exposes a prohibited private repository identifier: {normalized}")
+
     return seen
 
 
@@ -190,14 +225,18 @@ def validate_site_coverage(artifact_paths: set[str], errors: list[str]) -> None:
         if path.is_file()
     }
     missing = sorted(published_files - artifact_paths)
-    extra = sorted(path for path in artifact_paths if path.startswith("web/") and path not in published_files)
+    extra = sorted(
+        path
+        for path in artifact_paths
+        if path.startswith("web/") and path not in published_files
+    )
     for path in missing:
         fail(errors, f"published file is missing from publication manifest: {path}")
     for path in extra:
         fail(errors, f"manifest references a missing published file: {path}")
 
 
-def validate_publication_safety(errors: list[str]) -> None:
+def validate_manifest_safety(errors: list[str]) -> None:
     text = MANIFEST.read_text(encoding="utf-8") if MANIFEST.is_file() else ""
     if any(pattern.search(text) for pattern in PRIVATE_IDENTIFIER_PATTERNS):
         fail(errors, "publication manifest exposes a prohibited private repository identifier")
@@ -207,10 +246,10 @@ def main() -> int:
     errors: list[str] = []
     manifest = load_manifest(errors)
     if manifest is not None:
-        validate_top_level(manifest, errors)
-        artifact_paths = validate_artifacts(manifest, errors)
+        reviewed_at = validate_top_level(manifest, errors)
+        artifact_paths = validate_artifacts(manifest, reviewed_at, errors)
         validate_site_coverage(artifact_paths, errors)
-        validate_publication_safety(errors)
+        validate_manifest_safety(errors)
 
     if errors:
         print("Digitalis publication validation failed:", file=sys.stderr)
