@@ -25,6 +25,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Reject unresolved merge conflict markers
+        run: python3 scripts/validate_conflict_markers.py
+
       - name: Require provenance update for public asset changes
         run: python3 scripts/validate_publication_change.py
 
@@ -35,4 +38,4 @@ jobs:
         run: python3 scripts/validate_site.py
 
       - name: Compile validation scripts
-        run: python3 -m py_compile scripts/validate_publication.py scripts/validate_publication_change.py scripts/validate_site.py
+        run: python3 -m py_compile scripts/validate_conflict_markers.py scripts/validate_publication.py scripts/validate_publication_change.py scripts/validate_site.py
