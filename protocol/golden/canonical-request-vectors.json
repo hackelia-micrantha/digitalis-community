@@ -1,0 +1,72 @@
+{
+  "contract_version": "digitalis.v1",
+  "canonicalization": "digitalis-canonical-json-v1",
+  "hash": "SHA-256",
+  "encoding": "base64url-no-padding",
+  "vectors": [
+    {
+      "name": "configuration-bootstrap",
+      "protected_operation": {
+        "project_id": "11111111-1111-4111-8111-111111111111",
+        "contract_version": "digitalis.v1",
+        "challenge_id": "22222222-2222-4222-8222-222222222222",
+        "operation": "configuration.bootstrap",
+        "operation_arguments": {
+          "environment": "production",
+          "requested_capabilities": ["protected_config"]
+        }
+      },
+      "canonical_utf8": "{\"challenge_id\":\"22222222-2222-4222-8222-222222222222\",\"contract_version\":\"digitalis.v1\",\"operation\":\"configuration.bootstrap\",\"operation_arguments\":{\"environment\":\"production\",\"requested_capabilities\":[\"protected_config\"]},\"project_id\":\"11111111-1111-4111-8111-111111111111\"}",
+      "request_hash": "1D1YEavcto7xBFBW-dPcXEr6iyIq8aowGSR68poH7lk"
+    },
+    {
+      "name": "transaction-authorize",
+      "protected_operation": {
+        "project_id": "11111111-1111-4111-8111-111111111111",
+        "contract_version": "digitalis.v1",
+        "challenge_id": "33333333-3333-4333-8333-333333333333",
+        "operation": "transaction.authorize",
+        "operation_arguments": {
+          "merchant": {"id": "merchant-42", "country": "US"},
+          "requires_user_presence": true,
+          "currency": "USD",
+          "amount_minor": 1250
+        }
+      },
+      "canonical_utf8": "{\"challenge_id\":\"33333333-3333-4333-8333-333333333333\",\"contract_version\":\"digitalis.v1\",\"operation\":\"transaction.authorize\",\"operation_arguments\":{\"amount_minor\":1250,\"currency\":\"USD\",\"merchant\":{\"country\":\"US\",\"id\":\"merchant-42\"},\"requires_user_presence\":true},\"project_id\":\"11111111-1111-4111-8111-111111111111\"}",
+      "request_hash": "7ilO_sgIty0Nz2QUW06oe_bmhxYaCXfxF01GdhdbN0A"
+    },
+    {
+      "name": "unicode-and-nested-values",
+      "protected_operation": {
+        "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "contract_version": "digitalis.v1",
+        "challenge_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "operation": "configuration.bootstrap",
+        "operation_arguments": {
+          "sequence": [3, 2, 1],
+          "metadata": {"null_value": null, "emoji": "🔐"},
+          "label": "café"
+        }
+      },
+      "canonical_utf8": "{\"challenge_id\":\"bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb\",\"contract_version\":\"digitalis.v1\",\"operation\":\"configuration.bootstrap\",\"operation_arguments\":{\"label\":\"café\",\"metadata\":{\"emoji\":\"🔐\",\"null_value\":null},\"sequence\":[3,2,1]},\"project_id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\"}",
+      "request_hash": "MYDh8iljMqp-VgQNBb5G1W5UlOCBGtgTQRbEc5wK0NE"
+    },
+    {
+      "name": "unicode-code-point-key-order-and-escaping",
+      "protected_operation": {
+        "project_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "contract_version": "digitalis.v1",
+        "challenge_id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "operation": "configuration.bootstrap",
+        "operation_arguments": {
+          "💡": "supplementary",
+          "": "bmp-private-use",
+          "escaped": "line\nquote\"slash\\"
+        }
+      },
+      "canonical_utf8": "{\"challenge_id\":\"cccccccc-cccc-4ccc-8ccc-cccccccccccc\",\"contract_version\":\"digitalis.v1\",\"operation\":\"configuration.bootstrap\",\"operation_arguments\":{\"escaped\":\"line\\nquote\\\"slash\\\\\",\"\":\"bmp-private-use\",\"💡\":\"supplementary\"},\"project_id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\"}",
+      "request_hash": "nps1PSB9tmrNwAPU0xwjRTk51sQarcpm9i9dfHVDYDQ"
+    }
+  ]
+}

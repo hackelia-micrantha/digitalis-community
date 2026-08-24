@@ -1,0 +1,263 @@
+openapi: 3.1.0
+info:
+  title: Digitalis Trust Bootstrap API
+  version: digitalis.v1
+  description: >-
+    Executable provider-neutral challenge and attestation-verification contract.
+    Account identity and policy selection are intentionally not client-controlled
+    parts of trust bootstrap.
+servers:
+  - url: /api/v1
+paths:
+  /challenges:
+    post:
+      operationId: issueChallenge
+      summary: Issue a short-lived challenge from server-owned project configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChallengeRequest'
+      responses:
+        '201':
+          description: Challenge issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeResponse'
+        '400':
+          $ref: '#/components/responses/ProtocolError'
+        '403':
+          $ref: '#/components/responses/ProtocolError'
+        '404':
+          $ref: '#/components/responses/ProtocolError'
+  /attestations:verify:
+    post:
+      operationId: verifyAttestation
+      summary: Verify provider evidence against an issued challenge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttestationVerificationRequest'
+      responses:
+        '200':
+          description: Provider-verification result; policy and configuration remain separate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttestationVerificationResponse'
+        '400':
+          $ref: '#/components/responses/ProtocolError'
+        '403':
+          $ref: '#/components/responses/ProtocolError'
+        '404':
+          $ref: '#/components/responses/ProtocolError'
+        '409':
+          $ref: '#/components/responses/ProtocolError'
+        '410':
+          $ref: '#/components/responses/ProtocolError'
+        '429':
+          $ref: '#/components/responses/ProtocolError'
+  /configurations/{configRef}:
+    get:
+      operationId: getConfiguration
+      summary: Retrieve an authorized signed configuration by opaque reference
+      description: Contract stub; implementation is owned by the KMS-backed configuration slice.
+      parameters:
+        - name: configRef
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 256
+      responses:
+        '501':
+          description: Configuration-reference retrieval is not implemented in this slice
+components:
+  responses:
+    ProtocolError:
+      description: Versioned protocol validation or lifecycle failure
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ContractVersion:
+      type: string
+      const: digitalis.v1
+    ProjectId:
+      type: string
+      format: uuid
+    ProviderMode:
+      type: string
+      enum: [apple_app_attest, google_play_integrity]
+    OperationName:
+      type: string
+      pattern: '^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$'
+      maxLength: 128
+    CanonicalJsonValue:
+      description: >-
+        Canonical JSON value. Strings and object keys must be Unicode scalar
+        sequences; unpaired UTF-16 surrogates are rejected by runtime validators.
+      oneOf:
+        - type: 'null'
+        - type: boolean
+        - type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        - type: string
+          maxLength: 4096
+        - type: array
+          maxItems: 128
+          items:
+            $ref: '#/components/schemas/CanonicalJsonValue'
+        - type: object
+          maxProperties: 128
+          additionalProperties:
+            $ref: '#/components/schemas/CanonicalJsonValue'
+    OperationArguments:
+      type: object
+      maxProperties: 128
+      additionalProperties:
+        $ref: '#/components/schemas/CanonicalJsonValue'
+    ChallengeRequest:
+      type: object
+      additionalProperties: false
+      required: [contract_version, project_id, operation, provider, operation_arguments]
+      properties:
+        contract_version:
+          $ref: '#/components/schemas/ContractVersion'
+        project_id:
+          $ref: '#/components/schemas/ProjectId'
+        operation:
+          $ref: '#/components/schemas/OperationName'
+        provider:
+          $ref: '#/components/schemas/ProviderMode'
+        operation_arguments:
+          $ref: '#/components/schemas/OperationArguments'
+    ProviderPreparation:
+      type: object
+      additionalProperties: false
+      oneOf:
+        - required: [request_hash]
+        - required: [client_data_hash]
+      properties:
+        request_hash:
+          type: string
+          pattern: '^[A-Za-z0-9_-]{43}$'
+          description: Google Play Integrity standard-request requestHash
+        client_data_hash:
+          type: string
+          pattern: '^[A-Za-z0-9_-]{43}$'
+          description: Apple App Attest client-data binding digest
+    ChallengeResponse:
+      type: object
+      additionalProperties: false
+      required: [contract_version, challenge_id, project_id, operation, provider, policy_version, request_hash, issued_at, expires_at, max_submissions, provider_preparation]
+      properties:
+        contract_version:
+          $ref: '#/components/schemas/ContractVersion'
+        challenge_id:
+          type: string
+          format: uuid
+        project_id:
+          $ref: '#/components/schemas/ProjectId'
+        operation:
+          $ref: '#/components/schemas/OperationName'
+        provider:
+          $ref: '#/components/schemas/ProviderMode'
+        policy_version:
+          type: string
+          pattern: '^[A-Za-z0-9._-]{1,64}$'
+          description: Server-selected policy version for this project challenge
+        request_hash:
+          type: string
+          pattern: '^[A-Za-z0-9_-]{43}$'
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        max_submissions:
+          type: integer
+          minimum: 1
+          maximum: 10
+        provider_preparation:
+          $ref: '#/components/schemas/ProviderPreparation'
+    EvidenceEnvelope:
+      type: object
+      additionalProperties: false
+      required: [format, value]
+      properties:
+        format:
+          type: string
+          minLength: 1
+          maxLength: 64
+        value:
+          type: string
+          minLength: 1
+          maxLength: 65536
+          description: One-time provider evidence; never a reusable bearer credential
+    AttestationVerificationRequest:
+      type: object
+      additionalProperties: false
+      required: [contract_version, challenge_id, project_id, operation, provider, operation_arguments, evidence]
+      properties:
+        contract_version:
+          $ref: '#/components/schemas/ContractVersion'
+        challenge_id:
+          type: string
+          format: uuid
+        project_id:
+          $ref: '#/components/schemas/ProjectId'
+        operation:
+          $ref: '#/components/schemas/OperationName'
+        provider:
+          $ref: '#/components/schemas/ProviderMode'
+        operation_arguments:
+          $ref: '#/components/schemas/OperationArguments'
+        evidence:
+          $ref: '#/components/schemas/EvidenceEnvelope'
+    AttestationVerificationResponse:
+      type: object
+      additionalProperties: false
+      required: [contract_version, challenge_id, challenge_status, result, reason_code, startup_decision, configuration_ref]
+      properties:
+        contract_version:
+          $ref: '#/components/schemas/ContractVersion'
+        challenge_id:
+          type: string
+          format: uuid
+        challenge_status:
+          type: string
+          enum: [issued, consumed, revoked, expired]
+        result:
+          type: string
+          enum: [PROVIDER_VERIFIED, PROVIDER_REJECTED, PROVIDER_RETRY]
+        reason_code:
+          type: string
+          maxLength: 128
+        evidence_reference:
+          type: string
+          pattern: '^sha256:[0-9a-f]{64}$'
+        startup_decision:
+          type: 'null'
+          description: Reserved for the deterministic policy slice
+        configuration_ref:
+          type: 'null'
+          description: Reserved for the signed-configuration slice
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [status, message]
+      properties:
+        status:
+          const: error
+        message:
+          type: string
+          description: Stable protocol or lifecycle error code
