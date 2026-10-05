@@ -6,7 +6,8 @@
     "enabled": true
   },
   "assets": {
-    "directory": "./web"
+    "directory": "./web",
+    "not_found_handling": "404-page"
   },
   "send_metrics": false
 }
