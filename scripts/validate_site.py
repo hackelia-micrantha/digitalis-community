@@ -69,6 +69,8 @@ def validate_configuration(errors: list[str]) -> None:
     assets = config.get("assets")
     if not isinstance(assets, dict) or assets.get("directory") != "./web":
         fail(errors, "wrangler.jsonc assets.directory must publish ./web")
+    if not isinstance(assets, dict) or assets.get("not_found_handling") != "404-page":
+        fail(errors, "wrangler.jsonc assets.not_found_handling must be 404-page")
     if not config.get("compatibility_date"):
         fail(errors, "wrangler.jsonc must define compatibility_date")
     if (SITE / "wrangler.jsonc").exists():
