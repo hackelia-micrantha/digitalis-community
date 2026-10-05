@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "publication_id": "digitalis-community-2026-08-23",
-  "reviewed_at": "2026-08-23",
+  "publication_id": "digitalis-community-2026-10-04",
+  "reviewed_at": "2026-10-04",
   "direction": "one-way-inbound",
   "destination": {
     "repository": "hackelia-micrantha/digitalis-community",
@@ -10,7 +10,7 @@
   "source": {
     "visibility": "private",
     "repository_identifier": "withheld",
-    "reference": "publication-approved:restore-deployable-site-links",
+    "reference": "publication-approved:phyllotaxis-utility",
     "reference_type": "opaque-publication-id"
   },
   "policy": {
@@ -22,27 +22,27 @@
   "artifacts": [
     {
       "path": "web/index.html",
-      "version": "2026-07-27",
+      "version": "2026-10-04",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-pr-3",
-      "sha256": "65445168465d62d3f1662c937b88bb61779837f828f0e2b44830aa14bddb423e"
+      "source_reference": "public-maintenance:phyllotaxis-utility",
+      "sha256": "700cb06371d41c1e3fe8d220457118c357c2457b0eb7aba716f42e9dcbd59b71"
     },
     {
       "path": "web/whitepaper.html",
-      "version": "2026-07-27",
+      "version": "2026-10-04",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-pr-3",
-      "sha256": "43f06a9cbd2a8741fe6490ff60eb69cf14bba104f0264677fabcc080ee2761b1"
+      "source_reference": "public-maintenance:phyllotaxis-utility",
+      "sha256": "12c9c2e30efbccf729deb6845e7bb17fd3a133659e0ea6d472d60f09c1bafea4"
     },
     {
       "path": "web/styles.css",
-      "version": "2026-07-27",
+      "version": "2026-10-04",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-pr-3",
-      "sha256": "69a2212c5438fd0e2d28b70ef7f57acaea2f0a39e7cd31bfe28fd1fcc67bf60f"
+      "source_reference": "public-maintenance:phyllotaxis-utility",
+      "sha256": "8f8b9e1221688ed2b09c57abf5b9cbeca9a8b396c8bbb5cdce447a2c9e3d3453"
     },
     {
       "path": "web/main.js",
