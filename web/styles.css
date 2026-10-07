@@ -197,6 +197,16 @@ p {
   background: var(--surface);
   font-weight: 650;
   text-decoration: underline;
+  transition:
+    background-color 120ms ease-out,
+    border-color 120ms ease-out,
+    transform 120ms ease-out;
+}
+
+@media (hover: hover) {
+  .button:hover {
+    transform: translateY(-1px);
+  }
 }
 
 .button:visited {
@@ -214,8 +224,24 @@ p {
   color: #ffffff;
 }
 
+.button-primary:hover {
+  border-color: #1f523f;
+  background: #1f523f;
+}
+
 .button-secondary {
   background: var(--surface);
+}
+
+.button-secondary:hover {
+  border-color: var(--link);
+  background: var(--surface-sand);
+}
+
+.button:active {
+  outline: 1px solid currentColor;
+  outline-offset: -2px;
+  transform: translateY(0);
 }
 
 .summary-grid,
@@ -597,6 +623,13 @@ p {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .button,
+  .button:hover,
+  .button:active {
+    transition-duration: 0ms;
+    transform: none;
   }
 }
 
