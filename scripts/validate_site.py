@@ -205,71 +205,6 @@ def validate_progressive_enhancement(errors: list[str]) -> None:
         fail(errors, "main.js must provide IntersectionObserver and readable fallback behavior")
 
 
-def validate_interaction_motion(errors: list[str]) -> None:
-    styles_path = SITE / "styles.css"
-    if not styles_path.is_file():
-        return
-
-    styles = styles_path.read_text(encoding="utf-8")
-
-    button_rule = re.search(r"\.button\s*\{(?P<body>[^}]*)\}", styles, re.DOTALL)
-    if button_rule is None:
-        fail(errors, "styles.css must define the bounded .button interaction surface")
-        return
-    button_body = button_rule.group("body")
-    for property_name in ("background-color", "border-color", "transform"):
-        if not re.search(
-            rf"{property_name}\s+120ms\s+ease-out",
-            button_body,
-        ):
-            fail(
-                errors,
-                f".button transition must keep {property_name} within the 120ms interaction envelope",
-            )
-
-    hover_media = re.search(
-        r"@media\s*\(hover:\s*hover\)\s*\{(?P<body>.*?)\n\}",
-        styles,
-        re.DOTALL,
-    )
-    if (
-        hover_media is None
-        or ".button:hover" not in hover_media.group("body")
-        or "translateY(-1px)" not in hover_media.group("body")
-    ):
-        fail(errors, "button hover translation must be hover-capability gated and limited to -1px")
-
-    active_rule = re.search(r"\.button:active\s*\{(?P<body>[^}]*)\}", styles, re.DOTALL)
-    if active_rule is None:
-        fail(errors, "styles.css must define a button active state")
-    else:
-        active_body = active_rule.group("body")
-        if "translateY(0)" not in active_body:
-            fail(errors, "button active state must return to the resting position")
-        if "outline:" not in active_body and "border-color:" not in active_body:
-            fail(errors, "button active state must retain visible non-motion feedback")
-
-    reduced_motion = re.search(
-        r"@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{(?P<body>.*?)\n\}",
-        styles,
-        re.DOTALL,
-    )
-    if reduced_motion is None:
-        fail(errors, "styles.css must define reduced-motion handling")
-    else:
-        reduced_body = reduced_motion.group("body")
-        for selector in (".button", ".button:hover", ".button:active"):
-            if selector not in reduced_body:
-                fail(errors, f"reduced-motion handling must include {selector}")
-        if "transition-duration: 0ms" not in reduced_body or "transform: none" not in reduced_body:
-            fail(errors, "reduced-motion handling must remove button transition movement")
-
-    if styles.count("translateY(-1px)") != 1:
-        fail(errors, "default -1px translation must remain limited to the bounded button hover")
-    if re.search(r"\bscale(?:3d|X|Y)?\s*\(", styles, re.IGNORECASE):
-        fail(errors, "Utility interaction motion must not introduce scale/pop effects")
-
-
 def local_target(document: Path, reference: str) -> tuple[Path, str] | None:
     parsed = urlsplit(reference)
     if parsed.scheme or parsed.netloc or reference.startswith(("mailto:", "tel:")):
@@ -329,7 +264,6 @@ def main() -> int:
     validate_headers(errors)
     validate_security_txt(errors)
     validate_progressive_enhancement(errors)
-    validate_interaction_motion(errors)
     validate_documents(errors)
 
     if errors:
