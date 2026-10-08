@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "publication_id": "digitalis-community-2026-10-04",
-  "reviewed_at": "2026-10-04",
+  "publication_id": "digitalis-community-2026-10-07",
+  "reviewed_at": "2026-10-07",
   "direction": "one-way-inbound",
   "destination": {
     "repository": "hackelia-micrantha/digitalis-community",
@@ -10,7 +10,7 @@
   "source": {
     "visibility": "private",
     "repository_identifier": "withheld",
-    "reference": "publication-approved:phyllotaxis-utility",
+    "reference": "publication-approved:phyllotaxis-utility-motion",
     "reference_type": "opaque-publication-id"
   },
   "policy": {
@@ -38,11 +38,11 @@
     },
     {
       "path": "web/styles.css",
-      "version": "2026-10-04",
+      "version": "2026-10-07",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-maintenance:phyllotaxis-utility",
-      "sha256": "8f8b9e1221688ed2b09c57abf5b9cbeca9a8b396c8bbb5cdce447a2c9e3d3453"
+      "source_reference": "public-maintenance:phyllotaxis-interaction-motion",
+      "sha256": "36dece062caa6683bd4d0f18ad32d671dd1b81fcc997874af009247c26ef4df2"
     },
     {
       "path": "web/main.js",
