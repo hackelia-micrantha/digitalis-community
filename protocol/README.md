@@ -75,7 +75,7 @@ Shared vectors are in `golden/canonical-request-vectors.json`. The TypeScript ba
 
 ### Conformance verification
 
-Run the TypeScript suite from `backend/`:
+Run the TypeScript suite in the private implementation checkout from `backend/` (not included in this public distribution):
 
 ```bash
 pnpm exec jest --runInBand
@@ -84,7 +84,7 @@ pnpm exec jest --runInBand
 Run the standalone Kotlin verifier from the repository root:
 
 ```bash
-kotlinc -script protocol/v1/kotlin/CanonicalRequestVectors.main.kts
+kotlinc -script protocol/kotlin/CanonicalRequestVectors.main.kts
 ```
 
 Both implementations must pass before canonical serialization, vector, or request-hash changes can merge.
