@@ -98,7 +98,7 @@
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
       "source_reference": "public-candidate:pr-22",
-      "sha256": "6ff11b793f6e9e11ba7c0e4ae981c2124da6eee078bf7376308c9713b20e5be4"
+      "sha256": "7f14acd81d7e8b00c09d3448bd76aa4b06f00ca0eaa3f57f9d1d3e5985ebcd22"
     },
     {
       "path": "protocol/synthetic/README.md",
