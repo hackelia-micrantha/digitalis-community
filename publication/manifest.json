@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "publication_id": "digitalis-community-restore-pre-phyllotaxis-2026-10-07",
-  "reviewed_at": "2026-10-07",
+  "reviewed_at": "2026-10-12",
   "direction": "one-way-inbound",
   "destination": {
     "repository": "hackelia-micrantha/digitalis-community",
