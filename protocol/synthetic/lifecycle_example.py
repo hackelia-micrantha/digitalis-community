@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Synthetic trust-boundary demonstration; never verifies real attestation."""
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, Callable
 import unittest
 
 VERSION = "digitalis.v1"
@@ -52,6 +52,25 @@ class Challenge:
     max_submissions: int = 3
     consumed: bool = False
     revoked: bool = False
+    reserved: bool = False
+    terminal_failure: bool = False
+
+
+class ChallengeRepository:
+    """Single-process synthetic CAS; not durable or concurrent production storage."""
+    def reserve(self, challenge: Challenge, now: int) -> bool:
+        if (challenge.consumed or challenge.revoked or challenge.reserved
+                or challenge.terminal_failure or now >= challenge.expires_at):
+            return False
+        challenge.reserved = True
+        return True
+
+    def finalize(self, challenge: Challenge, installed: bool) -> None:
+        # Never release reservation after an installation attempt: its outcome
+        # may be unknown, even when a fake adapter throws an exception.
+        challenge.reserved = False
+        challenge.consumed = installed
+        challenge.terminal_failure = not installed
 
 
 class ProviderVerifier(Protocol):
@@ -95,13 +114,17 @@ class FakeInstaller:
 
 def evaluate(challenge: Challenge, submission: Submission, now: int,
              provider: ProviderVerifier, policy: PolicyAuthority,
-             installer: ConfigInstaller) -> tuple[str, bool]:
+             installer: ConfigInstaller, *, clock: Callable[[], int] | None = None,
+             repository: ChallengeRepository | None = None) -> tuple[str, bool]:
     """Return illustrative RFC-0006 startup outcome and protected-feature gate.
 
     All adapters are trusted *simulation seams*. Actual systems must authenticate
     backend authority, atomically consume durable challenges, and verify configs.
     """
-    if challenge.consumed or challenge.revoked or now >= challenge.expires_at:
+    read_time = clock or (lambda: now)
+    store = repository or ChallengeRepository()
+    if (challenge.consumed or challenge.revoked or challenge.reserved
+            or challenge.terminal_failure or read_time() >= challenge.expires_at):
         return "DENY_INTEGRITY", False
     if challenge.submissions >= challenge.max_submissions:
         return "DENY_INTEGRITY", False
@@ -127,7 +150,7 @@ def evaluate(challenge: Challenge, submission: Submission, now: int,
     try:
         resolved = policy.resolve(challenge.project)
     except Exception:
-        return "DENY_POLICY", False
+        return "RETRYABLE_FAILURE", False
     if resolved is None or (
         resolved.version, resolved.project, resolved.operation,
         resolved.provider, resolved.app
@@ -138,16 +161,17 @@ def evaluate(challenge: Challenge, submission: Submission, now: int,
         return "DENY_POLICY", False
 
     # A real implementation rechecks state under a transaction after async work.
-    if challenge.revoked or challenge.consumed or now >= challenge.expires_at:
+    if not store.reserve(challenge, read_time()):
         return "DENY_INTEGRITY", False
 
     try:
         installed = installer.install(resolved)
     except Exception:
+        store.finalize(challenge, False)
         return "DENY_INTEGRITY", False
+    store.finalize(challenge, installed)
     if not installed:
         return "DENY_INTEGRITY", False
-    challenge.consumed = True
     return "ALLOW", True
 
 
@@ -214,7 +238,7 @@ class SyntheticLifecycleExamples(unittest.TestCase):
         class BrokenPolicy:
             def resolve(self, project):
                 raise RuntimeError("synthetic policy outage")
-        self.assert_blocked("DENY_POLICY", policy=BrokenPolicy())
+        self.assert_blocked("RETRYABLE_FAILURE", policy=BrokenPolicy())
 
     def test_policy_denial(self):
         self.assert_blocked("DENY_POLICY", policy=FakePolicy(None))
@@ -226,6 +250,33 @@ class SyntheticLifecycleExamples(unittest.TestCase):
         self.installer.succeeds = False
         self.assertEqual(self.run_case(), ("DENY_INTEGRITY", False))
         self.assertFalse(self.challenge.consumed)
+
+    def test_expiry_while_provider_runs(self):
+        ticks = iter((NOW, NOW + 121))
+        outcome = evaluate(self.challenge, Submission(), NOW, FakeProvider(),
+                           FakePolicy(), self.installer, clock=lambda: next(ticks))
+        self.assertEqual(outcome, ("DENY_INTEGRITY", False))
+        self.assertEqual(self.installer.calls, 0)
+
+    def test_competing_reservation_denied(self):
+        class RacingInstaller(FakeInstaller):
+            def install(inner, policy):
+                competitor = evaluate(self.challenge, Submission(), NOW, FakeProvider(),
+                                      FakePolicy(), FakeInstaller())
+                self.assertEqual(competitor, ("DENY_INTEGRITY", False))
+                return super().install(policy)
+        self.assertEqual(evaluate(self.challenge, Submission(), NOW, FakeProvider(),
+                                  FakePolicy(), RacingInstaller()), ("ALLOW", True))
+
+    def test_install_exception_terminal(self):
+        class UnknownInstaller:
+            def install(self, policy):
+                raise TimeoutError("installation outcome unknown")
+        self.assertEqual(evaluate(self.challenge, Submission(), NOW, FakeProvider(),
+                                  FakePolicy(), UnknownInstaller()), ("DENY_INTEGRITY", False))
+        self.assertTrue(self.challenge.terminal_failure)
+        self.assertEqual(self.run_case(), ("DENY_INTEGRITY", False))
+        self.assertEqual(self.installer.calls, 0)
 
     def test_provider_exception_bounded_attempts(self):
         class FailingProvider:
