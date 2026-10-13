@@ -34,6 +34,9 @@ jobs:
       - name: Validate publication provenance
         run: python3 scripts/validate_publication.py
 
+      - name: Exercise synthetic protocol trust-boundary cases
+        run: python3 -m unittest discover -s protocol/synthetic -p '*_example.py' -v
+
       - name: Validate publication boundary
         run: python3 scripts/validate_site.py
 

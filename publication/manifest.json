@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "publication_id": "digitalis-community-restore-pre-phyllotaxis-2026-10-07",
-  "reviewed_at": "2026-10-07",
+  "publication_id": "digitalis-community-synthetic-lifecycle-2026-10-13",
+  "reviewed_at": "2026-10-13",
   "direction": "one-way-inbound",
   "destination": {
     "repository": "hackelia-micrantha/digitalis-community",
@@ -10,7 +10,7 @@
   "source": {
     "visibility": "private",
     "repository_identifier": "withheld",
-    "reference": "publication-approved:restore-pre-phyllotaxis-live",
+    "reference": "publication-candidate:synthetic-lifecycle-2026-10-13",
     "reference_type": "opaque-publication-id"
   },
   "policy": {
@@ -91,6 +91,22 @@
       "generation_method": "reviewed-public-maintenance",
       "source_reference": "production-polish",
       "sha256": "588b0e1723af50e6200f48630edb80f8e124b88e9debc0de5b2b7c8c0b88c0cf"
+    },
+    {
+      "path": "protocol/synthetic/lifecycle_example.py",
+      "version": "2026-10-13",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "public-candidate:pr-22",
+      "sha256": "4e52b88b982d6cca00e1a9bc32bf0951f110f00eed6ee29667cfe089926b8f88"
+    },
+    {
+      "path": "protocol/synthetic/README.md",
+      "version": "2026-10-13",
+      "ownership": "publication-owned",
+      "generation_method": "reviewed-public-maintenance",
+      "source_reference": "public-candidate:pr-22",
+      "sha256": "e15770a48ea377846575a571cd5439c162fd66b6bfba88da857f0b087946adea"
     }
   ]
 }
