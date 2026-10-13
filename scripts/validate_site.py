@@ -225,6 +225,12 @@ def validate_documents(errors: list[str]) -> None:
         text = document.read_text(encoding="utf-8")
         parser = DocumentParser()
         parser.feed(text)
+        # A strict same-origin style/font CSP must not silently block
+        # external font stylesheets on the restored public presentation.
+        for attribute, reference in parser.references:
+            hostname = urlsplit(reference).hostname
+            if hostname in {"fonts.googleapis.com", "fonts.gstatic.com"}:
+                fail(errors, f"{document.relative_to(ROOT)} requests a CSP-blocked external font: {attribute}")
         resolved = document.resolve()
         documents[resolved] = parser
         if not parser.visible_text:
