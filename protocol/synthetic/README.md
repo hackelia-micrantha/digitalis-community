@@ -12,9 +12,9 @@ python3 -m unittest discover -s protocol/synthetic -p '*_example.py' -v
 ```
 
 The tests demonstrate synthetic acceptance only after installation, replay/expiry
-and revocation denial, bounded attempts, version/project/operation/provider and
+and revocation denial, bounded attempts, expiry while provider work runs, version/project/operation/provider and
 request-hash binding, verified application identity, server-selected policy
-matching, provider failure/rejection and configuration-installation failure.
+matching, provider failure/rejection, single-winner reservation, and\nconfiguration-installation failure (including uncertain results).
 
 **Not security qualification.** No genuine attestation evidence, provider token
 verification, cryptographic canonicalization, signatures, authenticated backend
