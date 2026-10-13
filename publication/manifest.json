@@ -98,7 +98,7 @@
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
       "source_reference": "public-candidate:pr-22",
-      "sha256": "7f14acd81d7e8b00c09d3448bd76aa4b06f00ca0eaa3f57f9d1d3e5985ebcd22"
+      "sha256": "4e52b88b982d6cca00e1a9bc32bf0951f110f00eed6ee29667cfe089926b8f88"
     },
     {
       "path": "protocol/synthetic/README.md",
@@ -106,7 +106,7 @@
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
       "source_reference": "public-candidate:pr-22",
-      "sha256": "62a251c2dde72336dc668c6d93d0d9ade7692cffcae205796d1e303af2258e98"
+      "sha256": "e15770a48ea377846575a571cd5439c162fd66b6bfba88da857f0b087946adea"
     }
   ]
 }
