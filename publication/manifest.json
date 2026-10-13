@@ -22,19 +22,19 @@
   "artifacts": [
     {
       "path": "web/index.html",
-      "version": "2026-10-07",
+      "version": "2026-10-12",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-maintenance:restore-pre-phyllotaxis-live",
-      "sha256": "65445168465d62d3f1662c937b88bb61779837f828f0e2b44830aa14bddb423e"
+      "source_reference": "public-maintenance:align-restored-fonts-with-csp",
+      "sha256": "682c0ea11b9a0f1e3d91de5d3708b1a548fb6aafce108b6b2c64db46d30bdb0b"
     },
     {
       "path": "web/whitepaper.html",
-      "version": "2026-10-07",
+      "version": "2026-10-12",
       "ownership": "publication-owned",
       "generation_method": "reviewed-public-maintenance",
-      "source_reference": "public-maintenance:restore-pre-phyllotaxis-live",
-      "sha256": "43f06a9cbd2a8741fe6490ff60eb69cf14bba104f0264677fabcc080ee2761b1"
+      "source_reference": "public-maintenance:align-restored-fonts-with-csp",
+      "sha256": "12c9c2e30efbccf729deb6845e7bb17fd3a133659e0ea6d472d60f09c1bafea4"
     },
     {
       "path": "web/styles.css",
