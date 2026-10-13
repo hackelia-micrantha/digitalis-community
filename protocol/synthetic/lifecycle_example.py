@@ -46,14 +46,14 @@ def evaluate(challenge: Challenge, submission: Submission, now: int) -> tuple[st
     """
     if challenge.consumed or now >= challenge.expires_at:
         return "DENY_INTEGRITY", False
+    if submission.provider not in ("google_play_integrity", "apple_app_attest"):
+        return "UNSUPPORTED_ENVIRONMENT", False
     if (submission.version, submission.project, submission.operation, submission.provider,
         submission.reconstructed_hash) != (
         challenge.version, challenge.project, challenge.operation, challenge.provider,
         challenge.bound_hash
     ):
         return "DENY_INTEGRITY", False
-    if submission.provider not in ("google_play_integrity", "apple_app_attest"):
-        return "UNSUPPORTED_ENVIRONMENT", False
     if not submission.synthetic_provider_accepts:
         return "DENY_INTEGRITY", False
     if not submission.synthetic_policy_allows:
@@ -94,6 +94,11 @@ class SyntheticLifecycleExamples(unittest.TestCase):
 
     def test_contract_version(self):
         self.assert_denied(Submission(version="digitalis.v2"))
+
+    def test_unsupported_provider(self):
+        c = Challenge()
+        self.assertEqual(evaluate(c, Submission(provider="unsupported"), NOW), ("UNSUPPORTED_ENVIRONMENT", False))
+        self.assertFalse(c.consumed)
 
     def test_provider_rejection(self):
         self.assert_denied(Submission(synthetic_provider_accepts=False))
