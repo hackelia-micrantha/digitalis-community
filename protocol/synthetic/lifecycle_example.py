@@ -124,7 +124,10 @@ def evaluate(challenge: Challenge, submission: Submission, now: int,
     if verified.verified_app != submission.claimed_app:
         return "DENY_INTEGRITY", False
 
-    resolved = policy.resolve(challenge.project)
+    try:
+        resolved = policy.resolve(challenge.project)
+    except Exception:
+        return "DENY_POLICY", False
     if resolved is None or (
         resolved.version, resolved.project, resolved.operation,
         resolved.provider, resolved.app
@@ -206,6 +209,12 @@ class SyntheticLifecycleExamples(unittest.TestCase):
 
     def test_app_identity_mismatch(self):
         self.assert_blocked("DENY_INTEGRITY", provider=FakeProvider(VerifiedEvidence(HASH, "bad.app")))
+
+    def test_policy_adapter_exception_denies(self):
+        class BrokenPolicy:
+            def resolve(self, project):
+                raise RuntimeError("synthetic policy outage")
+        self.assert_blocked("DENY_POLICY", policy=BrokenPolicy())
 
     def test_policy_denial(self):
         self.assert_blocked("DENY_POLICY", policy=FakePolicy(None))
